@@ -1,3 +1,6 @@
+[![GoDoc](https://godoc.org/github.com/anthonyvitale/gonhl?status.svg)](http://godoc.org/github.com/anthonyvitale/gonhl)
+[![Build Status](https://travis-ci.com/anthonyvitale/gonhl.svg?branch=main)](https://travis-ci.com/anthonyvitale/gonhl)
+
 # gonhl
 
 gonhl is a Go library for interacting with the NHL stats API.
