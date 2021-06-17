@@ -1,5 +1,6 @@
 [![GoDoc](https://godoc.org/github.com/anthonyvitale/gonhl?status.svg)](http://godoc.org/github.com/anthonyvitale/gonhl)
 [![Build Status](https://travis-ci.com/anthonyvitale/gonhl.svg?branch=main)](https://travis-ci.com/anthonyvitale/gonhl)
+[![Go Report Card](https://goreportcard.com/badge/github.com/anthonyvitale/gonhl)](https://goreportcard.com/report/github.com/anthonyvitale/gonhl)
 
 # gonhl
 
