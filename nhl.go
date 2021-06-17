@@ -16,8 +16,8 @@ type Client struct {
 	baseURL    string
 
 	// Locale changes the language of certain response values.
-	// Currently supported locales are as follows:
-	// en_US // fr_CA // es_ES // cs_CS // sv_SV // sk_SK // de_DE // ru_RU // fi_FI
+	// Supported locales can be found here:
+	// https://statsapi.web.nhl.com/api/v1/languages
 	Locale string
 }
 
