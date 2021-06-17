@@ -16,7 +16,7 @@ func ExampleGetTeams() {
 	// team ids 1,2 are NJ Devils and NY Islanders
 	teams, err := nhlClient.GetTeams(1, 2)
 	if err != nil {
-		log.Fatalf("couldn't search for teams: %s", err.Error())
+		log.Fatalf("could not get teams: %s", err.Error())
 	}
 
 	fmt.Printf("Team 1 name: %s, Team 2 name: %s\n", teams[0].Name, teams[1].Name)
