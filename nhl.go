@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 const baseURL = "https://statsapi.web.nhl.com/api/v1"
@@ -29,11 +31,7 @@ func NewClient(h *http.Client) *Client {
 
 func (c *Client) get(uri string, v interface{}) error {
 	if c.Locale != "" {
-		u, _ := url.Parse(uri)
-		q := u.Query()
-		q.Set("locale", c.Locale)
-		u.RawQuery = q.Encode()
-		uri = u.String()
+		uri = buildURI(uri, map[string]string{"locale": c.Locale})
 	}
 
 	req, err := http.NewRequest("GET", uri, nil)
@@ -59,4 +57,25 @@ func (c *Client) get(uri string, v interface{}) error {
 	}
 
 	return nil
+}
+
+func joinIntIDs(ids []int, sep string) string {
+	var sb strings.Builder
+	for i, v := range ids {
+		sb.WriteString(strconv.Itoa(v))
+		if i < len(ids)-1 {
+			sb.WriteString(sep)
+		}
+	}
+	return sb.String()
+}
+
+func buildURI(uri string, queryParams map[string]string) string {
+	u, _ := url.Parse(uri)
+	q := u.Query()
+	for k, v := range queryParams {
+		q.Set(k, v)
+	}
+	u.RawQuery = q.Encode()
+	return u.String()
 }

@@ -1,6 +1,8 @@
 package gonhl
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // TimeZone provides specific details about the team's venue/arena time zone.
 type TimeZone struct {
@@ -56,21 +58,32 @@ type Team struct {
 	OfficialSiteURL string     `json:"officialSiteUrl"`
 	FranchiseID     int        `json:"franchiseId"`
 	Active          bool       `json:"active"`
+
+	// expand fields
+	Roster []Roster `json:"roster,omitempty"`
 }
 
 func (c *Client) GetTeam(id int) (*Team, error) {
-	teamURL := fmt.Sprintf("%s/teams/%d", c.baseURL, id)
+	t, err := c.GetTeams(id)
+	if err != nil {
+		return nil, err
+	}
+	return t[0], nil
+}
+
+func (c *Client) GetTeams(ids ...int) ([]*Team, error) {
+	teamsURL := fmt.Sprintf("%s/teams?teamId=%s", c.baseURL, joinIntIDs(ids, ","))
 
 	var t struct {
 		Teams []*Team `json:"Teams"`
 	}
 
-	err := c.get(teamURL, &t)
+	err := c.get(teamsURL, &t)
 	if err != nil {
 		return nil, err
 	}
 
-	return t.Teams[0], nil
+	return t.Teams, nil
 }
 
 // Person
