@@ -86,6 +86,21 @@ func (c *Client) GetTeams(ids ...int) ([]*Team, error) {
 	return t.Teams, nil
 }
 
+func (c *Client) GetAllTeams() ([]*Team, error) {
+	teamsURL := fmt.Sprintf("%s/teams", c.baseURL)
+
+	var t struct {
+		Teams []*Team `json:"Teams"`
+	}
+
+	err := c.get(teamsURL, &t)
+	if err != nil {
+		return nil, err
+	}
+
+	return t.Teams, nil
+}
+
 // Person
 type Person struct {
 	ID       int    `json:"id"`
