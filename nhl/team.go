@@ -1,4 +1,4 @@
-package gonhl
+package nhl
 
 import (
 	"fmt"
@@ -63,7 +63,7 @@ type Team struct {
 	Roster []Roster `json:"roster,omitempty"`
 }
 
-func (c *Client) GetTeam(id int) (*Team, error) {
+func (c *client) GetTeam(id int) (*Team, error) {
 	t, err := c.GetTeams(id)
 	if err != nil {
 		return nil, err
@@ -71,14 +71,17 @@ func (c *Client) GetTeam(id int) (*Team, error) {
 	return t[0], nil
 }
 
-func (c *Client) GetTeams(ids ...int) ([]*Team, error) {
-	teamsURL := fmt.Sprintf("%s/teams?teamId=%s", c.baseURL, joinIntIDs(ids, ","))
+func (c *client) GetTeams(ids ...int) ([]*Team, error) {
 
 	var t struct {
 		Teams []*Team `json:"Teams"`
 	}
 
-	err := c.get(teamsURL, &t)
+	u := buildURL(c.host, "/teams", map[string]string{
+		"teamId": joinIntIDs(ids, ","),
+	})
+
+	err := c.get(u, &t)
 	if err != nil {
 		return nil, err
 	}
@@ -86,14 +89,15 @@ func (c *Client) GetTeams(ids ...int) ([]*Team, error) {
 	return t.Teams, nil
 }
 
-func (c *Client) GetAllTeams() ([]*Team, error) {
-	teamsURL := fmt.Sprintf("%s/teams", c.baseURL)
+func (c *client) GetAllTeams() ([]*Team, error) {
 
 	var t struct {
 		Teams []*Team `json:"Teams"`
 	}
 
-	err := c.get(teamsURL, &t)
+	u := buildURL(c.host, "/teams", nil)
+
+	err := c.get(u, &t)
 	if err != nil {
 		return nil, err
 	}
@@ -121,14 +125,13 @@ type Roster struct {
 	Position     Position `json:"position"`
 }
 
-func (c *Client) GetTeamRoster(id int) ([]*Roster, error) {
-	teamURL := fmt.Sprintf("%s/teams/%d/roster", c.baseURL, id)
-
+func (c *client) GetTeamRoster(id int) ([]*Roster, error) {
 	var t struct {
 		Roster []*Roster `json:"Roster"`
 	}
 
-	err := c.get(teamURL, &t)
+	u := buildURL(c.host, fmt.Sprintf("/teams/%d/roster", id), nil)
+	err := c.get(u, &t)
 	if err != nil {
 		return nil, err
 	}
