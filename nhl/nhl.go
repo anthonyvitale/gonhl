@@ -1,40 +1,59 @@
-package gonhl
+package nhl
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"strconv"
 	"strings"
 )
 
 const baseURL = "https://statsapi.web.nhl.com/api/v1"
 
-type Client struct {
+// Client is a client for working with the NHL API.
+type Client interface {
+	GetTeam(int) (*Team, error)
+	GetTeams(...int) ([]*Team, error)
+	GetAllTeams() ([]*Team, error)
+	GetTeamRoster(int) ([]*Roster, error)
+}
+
+type client struct {
 	httpClient *http.Client
-	baseURL    string
+	host       *url.URL
 
 	// Locale changes the language of certain response values.
 	// Supported locales can be found here:
 	// https://statsapi.web.nhl.com/api/v1/languages
-	Locale string
+	locale string
 }
 
-// Client is a client for working with the NHL API.
-func NewClient(h *http.Client) *Client {
-	return &Client{
-		httpClient: h,
-		baseURL:    baseURL,
+// NewClient is a client for working with the NHL API.
+func NewClient(httpClient *http.Client, host string) (Client, error) {
+	if host == "" {
+		return nil, fmt.Errorf("nhl: host cannot be empty")
 	}
+
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+
+	if httpClient == nil {
+		return nil, fmt.Errorf("nhl: http client cannot be nil")
+	}
+
+	return &client{
+		httpClient: httpClient,
+		host:       u,
+	}, nil
 }
 
-func (c *Client) get(uri string, v interface{}) error {
-	if c.Locale != "" {
-		uri = buildURI(uri, map[string]string{"locale": c.Locale})
-	}
+func (c *client) get(url string, v interface{}) error {
 
-	req, err := http.NewRequest("GET", uri, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
 	}
@@ -70,8 +89,8 @@ func joinIntIDs(ids []int, sep string) string {
 	return sb.String()
 }
 
-func buildURI(uri string, queryParams map[string]string) string {
-	u, _ := url.Parse(uri)
+func buildURL(u *url.URL, endpoint string, queryParams map[string]string) string {
+	u.Path = path.Join(u.Path, endpoint)
 	q := u.Query()
 	for k, v := range queryParams {
 		q.Set(k, v)

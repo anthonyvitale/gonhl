@@ -1,20 +1,23 @@
-package gonhl_test
+package nhl_test
 
 import (
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/anthonyvitale/gonhl"
+	"github.com/anthonyvitale/gonhl/nhl"
 )
 
+const baseURL = "https://statsapi.web.nhl.com/api/v1"
+
 func ExampleGetTeams() {
-	h := &http.Client{}
-	nhlClient := gonhl.NewClient(h)
-	nhlClient.Locale = "en_US"
+	client, err := nhl.NewClient(http.DefaultClient, baseURL)
+	if err != nil {
+		log.Fatalf("could not create client: %s", err.Error())
+	}
 
 	// team ids 1,2 are NJ Devils and NY Islanders
-	teams, err := nhlClient.GetTeams(1, 2)
+	teams, err := client.GetTeams(1, 2)
 	if err != nil {
 		log.Fatalf("could not get teams: %s", err.Error())
 	}
@@ -24,12 +27,13 @@ func ExampleGetTeams() {
 }
 
 func ExampleGetAllTeams() {
-	h := &http.Client{}
-	nhlClient := gonhl.NewClient(h)
-	nhlClient.Locale = "en_US"
+	client, err := nhl.NewClient(http.DefaultClient, baseURL)
+	if err != nil {
+		log.Fatalf("could not create client: %s", err.Error())
+	}
 
 	// team ids 1,2 are NJ Devils and NY Islanders
-	teams, err := nhlClient.GetAllTeams()
+	teams, err := client.GetAllTeams()
 	if err != nil {
 		log.Fatalf("could not get teams: %s", err.Error())
 	}
